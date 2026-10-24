@@ -48,12 +48,12 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
-          cp app/build/outputs/apk/release/app-release.apk ../等离子体果园-v1.0.${{ github.run_number }}.apk
+          cp app/build/outputs/apk/release/app-release.apk ../PlasecoOrchard-v1.0.${{ github.run_number }}.apk
 
       - uses: actions/upload-artifact@v4
         with:
           name: appleorder-apk
-          path: 等离子体果园-v1.0.*.apk
+          path: PlasecoOrchard-v1.0.*.apk
           retention-days: 30
 
       - name: 发布到 Releases（固定下载链接）
@@ -61,7 +61,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG=v1.0.${{ github.run_number }}
-          cp 等离子体果园-$TAG.apk appleorder.apk
-          gh release create "$TAG" 等离子体果园-$TAG.apk appleorder.apk \
+          cp PlasecoOrchard-$TAG.apk appleorder.apk
+          gh release create "$TAG" PlasecoOrchard-$TAG.apk appleorder.apk \
             --title "等离子体果园 $TAG" --latest \
             --notes "安卓安装包。最新版固定下载地址：https://github.com/${{ github.repository }}/releases/latest/download/appleorder.apk"
