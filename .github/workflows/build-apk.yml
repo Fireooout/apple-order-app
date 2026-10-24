@@ -1,0 +1,67 @@
+name: 编译 APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装依赖并同步 Capacitor
+        run: |
+          npm ci
+          npx cap sync android
+
+      - name: 解密签名证书
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_PASSWORD" ]; then echo "::error::未设置仓库 Secret: KEYSTORE_PASSWORD"; exit 1; fi
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in signing/release.jks.enc \
+            -out ${{ runner.temp }}/release.jks -pass env:KEYSTORE_PASSWORD
+
+      - name: 编译签名版 APK
+        working-directory: android
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/release.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: appleorder
+          KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: 1.0.${{ github.run_number }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+          cp app/build/outputs/apk/release/app-release.apk ../等离子体果园-v1.0.${{ github.run_number }}.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: appleorder-apk
+          path: 等离子体果园-v1.0.*.apk
+          retention-days: 30
+
+      - name: 发布到 Releases（固定下载链接）
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=v1.0.${{ github.run_number }}
+          cp 等离子体果园-$TAG.apk appleorder.apk
+          gh release create "$TAG" 等离子体果园-$TAG.apk appleorder.apk \
+            --title "等离子体果园 $TAG" --latest \
+            --notes "安卓安装包。最新版固定下载地址：https://github.com/${{ github.repository }}/releases/latest/download/appleorder.apk"

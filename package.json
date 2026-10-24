@@ -1,0 +1,12 @@
+{
+  "name": "apple-order-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "等离子体果园订单后台 Android App（Capacitor 壳，加载 https://apple.plaseco.tech/admin）",
+  "scripts": { "sync": "cap sync android" },
+  "dependencies": {
+    "@capacitor/android": "6.2.1",
+    "@capacitor/core": "6.2.1"
+  },
+  "devDependencies": { "@capacitor/cli": "6.2.1" }
+}

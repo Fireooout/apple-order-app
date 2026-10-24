@@ -1,0 +1,20 @@
+{
+  "appId": "tech.plaseco.appleorder",
+  "appName": "等离子体果园",
+  "webDir": "www",
+  "server": {
+    "url": "https://apple.plaseco.tech/admin",
+    "androidScheme": "https",
+    "cleartext": false,
+    "errorPath": "error.html",
+    "allowNavigation": [
+      "apple.plaseco.tech"
+    ]
+  },
+  "android": {
+    "appendUserAgent": "AppleOrderApp/1.0",
+    "allowMixedContent": false,
+    "backgroundColor": "#9e2a2b",
+    "webContentsDebuggingEnabled": false
+  }
+}
