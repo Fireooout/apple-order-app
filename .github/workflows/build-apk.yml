@@ -44,23 +44,23 @@ jobs:
           KEY_ALIAS: appleorder
           KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           VERSION_CODE: ${{ github.run_number }}
-          VERSION_NAME: 1.0.${{ github.run_number }}
+          VERSION_NAME: 1.1.${{ github.run_number }}
         run: |
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
-          cp app/build/outputs/apk/release/app-release.apk ../PlasecoOrchard-v1.0.${{ github.run_number }}.apk
+          cp app/build/outputs/apk/release/app-release.apk ../PlasecoOrchard-v1.1.${{ github.run_number }}.apk
 
       - uses: actions/upload-artifact@v4
         with:
           name: appleorder-apk
-          path: PlasecoOrchard-v1.0.*.apk
+          path: PlasecoOrchard-v1.*.apk
           retention-days: 30
 
       - name: 发布到 Releases（固定下载链接）
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG=v1.0.${{ github.run_number }}
+          TAG=v1.1.${{ github.run_number }}
           cp PlasecoOrchard-$TAG.apk appleorder.apk
           gh release create "$TAG" PlasecoOrchard-$TAG.apk appleorder.apk \
             --title "等离子体果园 $TAG" --latest \
